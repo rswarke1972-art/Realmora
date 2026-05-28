@@ -926,6 +926,11 @@ button {
 
 .consequence-notification-banner.active {
   display: flex;
+  pointer-events: auto;
+}
+
+.consequence-notification-banner:not(.active) {
+  pointer-events: none;
 }
 
 .banner-narrative {
@@ -1168,6 +1173,12 @@ button {
   100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
+/* Flex-centered modals must NOT use translate(-50%, -50%) — only scale */
+@keyframes modalContentIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 @keyframes textFlickerRed {
   0%, 100% { opacity: 0.8; text-shadow: 0 0 4px rgba(231,76,60,0.6); }
   50% { opacity: 1; text-shadow: 0 0 14px rgba(231,76,60,0.9), 0 0 25px rgba(231,76,60,0.5); }
@@ -1212,8 +1223,38 @@ button {
   width: 100%;
   max-width: 440px;
   position: relative;
-  animation: zoomNotify 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  box-sizing: border-box;
+  animation: modalContentIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   padding: 2rem 1.5rem !important;
+}
+
+.modal-header,
+.modal-body,
+.modal-stats-grid,
+.modal-actions-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.modal-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 1.2rem;
+}
+
+.modal-stat-box {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.modal-actions-container {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 1rem;
 }
 
 .modal-overlay .btn-close {
@@ -1356,6 +1397,14 @@ button {
     box-sizing: border-box;
   }
 
+  img,
+  svg,
+  video,
+  canvas {
+    max-width: 100%;
+    height: auto;
+  }
+
   /* =========================
      GAMEPLAY SCREEN
   ========================= */
@@ -1364,11 +1413,24 @@ button {
     padding: 0.5rem !important;
     gap: 0.75rem !important;
     overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 0;
   }
 
   .gameplay-middle-grid {
     grid-template-columns: 1fr !important;
     gap: 0.75rem !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .decision-card-container {
+    min-width: 0 !important;
+    max-width: 100% !important;
   }
 
   .side-profile-panel {
@@ -1455,6 +1517,25 @@ button {
     font-size: 0.95rem !important;
     white-space: normal !important;
     line-height: 1.5 !important;
+    position: relative !important;
+    z-index: 3 !important;
+    pointer-events: auto !important;
+  }
+
+  .card-choices-stack {
+    position: relative !important;
+    z-index: 3 !important;
+  }
+
+  /* Hover preview steals first tap on touch — hide on phones */
+  .consequence-preview-overlay {
+    display: none !important;
+    pointer-events: none !important;
+  }
+
+  .consequence-notification-banner:not(.active) {
+    display: none !important;
+    pointer-events: none !important;
   }
 
   /* =========================
@@ -1481,22 +1562,44 @@ button {
   .game-drawer-panel {
     width: 100% !important;
     min-width: 0 !important;
-    overflow-x: clip !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
     overflow-y: auto !important;
-    max-height: 280px !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+    overscroll-behavior: contain !important;
+    max-height: min(42vh, 340px) !important;
     padding: 12px !important;
+  }
+
+  #drawer-world.game-drawer-panel.active {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
   }
 
   .game-drawer-panel > * {
     min-width: 0 !important;
+    max-width: 100% !important;
   }
 
-  #drawer-diplomacy > div,
-  #real-players-list-mobile {
+  .horizontal-scroll-row {
+    display: flex !important;
+    gap: 0.5rem !important;
     overflow-x: auto !important;
+    overflow-y: hidden !important;
+    max-width: 100% !important;
     overscroll-behavior-x: contain !important;
     -webkit-overflow-scrolling: touch !important;
-    touch-action: pan-x !important;
+    touch-action: pan-x pan-y !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  .horizontal-scroll-row > .glass-panel,
+  .horizontal-scroll-row > div {
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+    max-width: min(220px, 82vw) !important;
   }
 
   /* diplomacy cards */
@@ -1512,18 +1615,31 @@ button {
   #real-players-list-mobile {
     display: flex !important;
     overflow-x: auto !important;
+    overflow-y: hidden !important;
     gap: 10px !important;
     padding-bottom: 8px !important;
+    max-width: 100% !important;
+    touch-action: pan-x pan-y !important;
   }
 
   #real-players-list-mobile > div {
-    min-width: 220px !important;
-    flex: 0 0 auto !important;
+    min-width: 0 !important;
+    max-width: min(220px, 82vw) !important;
+    flex: 0 0 min(220px, 82vw) !important;
   }
 
   /* =========================
      VIEW KINGDOM FIX
   ========================= */
+
+  #kingdom-profile-modal.modal-overlay {
+    align-items: flex-start !important;
+    justify-content: center !important;
+    padding: max(10px, env(safe-area-inset-top)) 10px 10px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
 
   .modal-overlay {
     padding: 10px !important;
@@ -1531,45 +1647,73 @@ button {
     overflow-y: auto !important;
   }
 
+  #kingdom-profile-modal .modal-content {
+    width: 100% !important;
+    max-width: calc(100vw - 20px) !important;
+    min-width: 0 !important;
+    max-height: calc(100dvh - 24px) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding: 16px 12px !important;
+    margin: 0 auto !important;
+    transform: none !important;
+    animation: modalContentIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+    box-sizing: border-box !important;
+  }
+
   .modal-content {
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: calc(100vw - 20px) !important;
     min-width: 0 !important;
     max-height: calc(100dvh - 20px) !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
     padding: 16px !important;
+    transform: none !important;
+    animation: modalContentIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+    box-sizing: border-box !important;
   }
 
   .modal-content * {
     max-width: 100% !important;
+    box-sizing: border-box;
   }
 
-  #modal-title-kingdom {
+  .modal-header {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  #modal-title-kingdom,
+  #modal-kingdom-details {
     display: block !important;
-    white-space: pre-line !important;
+    width: 100% !important;
+    white-space: normal !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
   }
 
-  /* FORCE STACKING */
-  .modal-layout,
-  .kingdom-layout,
-  .profile-layout {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 12px !important;
+  .modal-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .modal-stat-box {
+    min-width: 0 !important;
   }
 
   .modal-actions-container {
     display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 8px !important;
+    width: 100% !important;
   }
 
   .modal-actions-container button {
     width: 100% !important;
     min-width: 0 !important;
+    max-width: 100% !important;
     font-size: 0.8rem !important;
     white-space: normal !important;
     touch-action: manipulation !important;

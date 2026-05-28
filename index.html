@@ -314,7 +314,7 @@
     <!-- Collapsible Drawers -->
     <!-- 1. Mobile Diplomacy View -->
     <section id="drawer-diplomacy" class="glass-panel game-drawer-panel active">
-      <div id="mobile-npc-list" style="display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem;">
+      <div id="mobile-npc-list" class="horizontal-scroll-row">
         <!-- Filled dynamically in app.js on mobile screens -->
       </div>
     </section>
@@ -333,11 +333,7 @@
     Real Kingdoms 🌍
   </h3>
 
-  <div id="real-players-list-mobile"
-       style="display: flex;
-       gap: 0.5rem;
-       overflow-x: auto;
-       padding-bottom: 1rem;">
+  <div id="real-players-list-mobile" class="horizontal-scroll-row">
 
     <p class="text-muted"
        style="font-size: 0.8rem;
@@ -573,45 +569,40 @@ Create World Vote
         <div id="modal-avatar" class="profile-avatar-container" style="font-size: 1.8rem; width: 60px; height: 60px; margin-bottom: 0.5rem;">👑</div>
         <h3 id="modal-title-ruler" class="font-royal text-gold" style="font-size: 1.4rem;">Ruler Name</h3>
         <span id="modal-title-kingdom" class="text-muted" style="font-size: 0.9rem;">Kingdom Name</span>
+        <span id="modal-kingdom-details" class="text-muted kingdom-modal-details" style="font-size: 0.78rem; display: block; margin-top: 4px;"></span>
         <div>
           <span id="modal-relationship-badge" class="profile-personality-badge" style="margin-top: 6px;">Neutral ⚖️</span>
         </div>
       </div>
       <div class="modal-body" style="margin-top: 1rem;">
-        <div class="modal-stats-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 1.2rem;">
+        <div class="modal-stats-grid">
           <!-- Economy Widget -->
-          <div class="modal-stat-box" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 0.5rem; text-align: center; border-radius: 6px; display: flex; flex-direction: column; gap: 2px;">
+          <div class="modal-stat-box" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 0.5rem; text-align: center; border-radius: 6px; display: flex; flex-direction: column; gap: 2px; min-width: 0;">
             <span style="font-size: 1.1rem;">💰</span>
             <span style="font-size: 0.65rem; text-transform: uppercase; color: var(--color-text-muted);">Economy</span>
             <span id="modal-stat-economy" style="font-size: 1.1rem; font-weight: 700; color: #fff;">50</span>
           </div>
           <!-- Trust Widget -->
-          <div class="modal-stat-box" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 0.5rem; text-align: center; border-radius: 6px; display: flex; flex-direction: column; gap: 2px;">
+          <div class="modal-stat-box" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 0.5rem; text-align: center; border-radius: 6px; display: flex; flex-direction: column; gap: 2px; min-width: 0;">
             <span style="font-size: 1.1rem;">🤝</span>
             <span style="font-size: 0.65rem; text-transform: uppercase; color: var(--color-text-muted);">Trust</span>
             <span id="modal-stat-trust" style="font-size: 1.1rem; font-weight: 700; color: #fff;">50</span>
           </div>
           <!-- War Widget -->
-          <div class="modal-stat-box" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 0.5rem; text-align: center; border-radius: 6px; display: flex; flex-direction: column; gap: 2px;">
+          <div class="modal-stat-box" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 0.5rem; text-align: center; border-radius: 6px; display: flex; flex-direction: column; gap: 2px; min-width: 0;">
             <span style="font-size: 1.1rem;">⚔️</span>
             <span style="font-size: 0.65rem; text-transform: uppercase; color: var(--color-text-muted);">War</span>
             <span id="modal-stat-war" style="font-size: 1.1rem; font-weight: 700; color: #fff;">50</span>
           </div>
           <!-- Diplomacy Widget -->
-          <div class="modal-stat-box" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 0.5rem; text-align: center; border-radius: 6px; display: flex; flex-direction: column; gap: 2px;">
+          <div class="modal-stat-box" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 0.5rem; text-align: center; border-radius: 6px; display: flex; flex-direction: column; gap: 2px; min-width: 0;">
             <span style="font-size: 1.1rem;">🕊️</span>
             <span style="font-size: 0.65rem; text-transform: uppercase; color: var(--color-text-muted);">Diplomacy</span>
             <span id="modal-stat-diplomacy" style="font-size: 1.1rem; font-weight: 700; color: #fff;">50</span>
           </div>
         </div>
         
-        <div class="modal-actions-container"
-style="
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 8px;
-margin-top: 1rem;
-">
+        <div class="modal-actions-container">
 
   <button
   id="btn-action-alliance"

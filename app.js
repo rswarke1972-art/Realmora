@@ -539,6 +539,52 @@ function showToast(message) {
 
 // ==================== 6. THE GAMEPLAY SYSTEM ====================
 
+let isApplyingChoice = false;
+
+function canUseHoverPreview() {
+  return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+}
+
+/** Logs scrollWidth vs innerWidth and elements wider than viewport (mobile). */
+function logMobileOverflowDiagnostics() {
+  if (window.innerWidth > 768) return;
+
+  const docW = document.documentElement.scrollWidth;
+  const winW = window.innerWidth;
+  const overflowPx = docW - winW;
+
+  console.group("[Realmora Mobile Overflow]");
+  console.log("documentElement.scrollWidth:", docW);
+  console.log("window.innerWidth:", winW);
+  console.log("overflow (px):", overflowPx);
+
+  if (overflowPx > 1) {
+    const offenders = [];
+    document.querySelectorAll("body *").forEach((el) => {
+      if (!(el instanceof HTMLElement)) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.width < 2) return;
+      if (rect.right > winW + 1 || rect.left < -1) {
+        offenders.push({
+          tag: el.tagName,
+          id: el.id || "",
+          className: String(el.className || "").slice(0, 80),
+          width: Math.round(rect.width),
+          right: Math.round(rect.right)
+        });
+      }
+    });
+    console.table(offenders.slice(0, 30));
+  }
+  console.groupEnd();
+}
+
+let overflowDiagTimer = null;
+function scheduleMobileOverflowDiagnostics() {
+  clearTimeout(overflowDiagTimer);
+  overflowDiagTimer = setTimeout(logMobileOverflowDiagnostics, 300);
+}
+
 // Initialize setup state
 let selectedFocus = "merchant";
 document.querySelectorAll('.focus-card').forEach(card => {
@@ -618,6 +664,8 @@ if (window.playerId) {
 
 // Draw a decision card
 function drawActiveCard() {
+  isApplyingChoice = false;
+
   // Check if a queued intervention applies
   const intervention = checkDiplomaticInterventions(state);
   if (intervention) {
@@ -636,7 +684,9 @@ function drawActiveCard() {
 
   // Re-populate Choice Buttons
   DOM.card.choices.innerHTML = "";
-  state.activeCard.choices.forEach((choice, index) => {
+  const hoverPreviewEnabled = canUseHoverPreview();
+
+  state.activeCard.choices.forEach((choice) => {
     // Check conditional requirements
     if (choice.requiredFlags) {
       const hasAll = choice.requiredFlags.every(f => state.flags.includes(f));
@@ -645,21 +695,27 @@ function drawActiveCard() {
 
     const btn = document.createElement('button');
     btn.className = "btn-choice";
+    btn.type = "button";
     btn.innerText = choice.text;
     
-    // Consequence Previews on hover
-    btn.addEventListener('mouseenter', () => renderConsequencePreview(choice));
-    btn.addEventListener('mouseleave', () => DOM.card.previewOverlay.classList.remove('active'));
-    
-    // Tap to apply Choice
-    btn.addEventListener('click', () => {
-      applyChoice(index, choice);
+    // Desktop-only hover preview (first tap on touch was opening preview, blocking click)
+    if (hoverPreviewEnabled) {
+      btn.addEventListener('mouseenter', () => renderConsequencePreview(choice));
+      btn.addEventListener('mouseleave', () => DOM.card.previewOverlay.classList.remove('active'));
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (isApplyingChoice || DOM.card.notification.classList.contains('active')) return;
+      applyChoice(choice);
     });
 
     DOM.card.choices.appendChild(btn);
   });
 
   audioSynth.playChime();
+  scheduleMobileOverflowDiagnostics();
 }
 
 // Visual Hover Feedback helper
@@ -682,7 +738,14 @@ function renderConsequencePreview(choice) {
 }
 
 // Apply Choice and show elegant result modal prior to next turn
-function applyChoice(choiceIndex, choice) {
+function applyChoice(choice) {
+  if (isApplyingChoice || DOM.card.notification.classList.contains('active')) return;
+  isApplyingChoice = true;
+
+  DOM.card.choices.querySelectorAll('.btn-choice').forEach((b) => {
+    b.disabled = true;
+  });
+
   // Play sound response
   const containsNegative = Object.values(choice.effects).some(v => v < 0);
   if (containsNegative) {
@@ -757,12 +820,16 @@ function applyChoice(choiceIndex, choice) {
   // Show choice modal popup overlay
   DOM.card.notification.classList.add('active');
 
-  // Single listener on overlay background to close and trigger next turn safely
-  DOM.card.notification.onclick = () => {
+  let notificationDismissed = false;
+  const dismissNotification = (e) => {
+    if (notificationDismissed) return;
+    notificationDismissed = true;
+    if (e?.cancelable) e.preventDefault();
     DOM.card.notification.classList.remove('active');
-    DOM.card.notification.onclick = null;
     advanceTurn();
   };
+
+  DOM.card.notification.addEventListener('click', dismissNotification, { once: true });
 }
 
 // Complete the current turn and verify endings
@@ -917,10 +984,7 @@ for (const stat in state.stats) {
   // Build mobile diplomacy list grid
   DOM.drawers.diplomacy.innerHTML = "";
   const mobileWrap = document.createElement('div');
-  mobileWrap.style.display = "flex";
-  mobileWrap.style.gap = "0.5rem";
-  mobileWrap.style.overflowX = "auto";
-  mobileWrap.style.paddingBottom = "0.5rem";
+  mobileWrap.className = "horizontal-scroll-row";
 
   for (const key in state.npcKingdoms) {
     const score = state.npcKingdoms[key].relationship;
@@ -930,7 +994,6 @@ for (const stat in state.stats) {
     const card = document.createElement('div');
     card.className = "glass-panel";
     card.style.padding = "0.6rem";
-    card.style.minWidth = window.innerWidth <= 768 ? "min(160px, 76vw)" : "160px";
     card.style.flex = "0 0 auto";
     card.style.display = "flex";
     card.style.flexDirection = "column";
@@ -1204,6 +1267,10 @@ DOM.buttons.soundToggle.addEventListener('click', () => {
 
 // ==================== 9. INITIAL LOAD ROUTER ====================
 window.addEventListener('DOMContentLoaded', () => {
+  scheduleMobileOverflowDiagnostics();
+  window.addEventListener('resize', scheduleMobileOverflowDiagnostics);
+  window.addEventListener('orientationchange', scheduleMobileOverflowDiagnostics);
+
   // Check if save exists to display continue button
   const hasSave = loadGame();
   if (hasSave && state.player.rulerName) {
@@ -1422,7 +1489,6 @@ text-transform:uppercase;
       const card = document.createElement("div");
       card.className = "glass-panel";
       card.style.padding = "0.75rem";
-      card.style.minWidth = window.innerWidth <= 768 ? "min(180px, 82vw)" : "180px";
       card.style.flex = "0 0 auto";
       card.style.display = "flex";
       card.style.flexDirection = "column";
@@ -1485,21 +1551,13 @@ function openPlayerProfile(player) {
 
   modal.titleRuler.innerText = player.rulerName;
   modal.titleKingdom.innerText = player.kingdomName;
-  modal.titleKingdom.innerText =
-`
-${player.kingdomName}
 
-🏛️ Capital:
-${player.capital
-|| "Unknown"}
-
-🗺️ Regions:
-${(
-player
-.ownedRegions
-|| []
-).join(", ")}
-`;
+  const kingdomDetails = document.getElementById("modal-kingdom-details");
+  if (kingdomDetails) {
+    const capital = player.capital || "Unknown";
+    const regions = (player.ownedRegions || []).join(", ") || "None";
+    kingdomDetails.textContent = `🏛️ Capital: ${capital} • 🗺️ Regions: ${regions}`;
+  }
 
   // Render dynamic relationship badge
   const rel = getPlayerRelationship(player.playerId);
@@ -2149,7 +2207,12 @@ function setActiveTab(tabKey) {
     }
   }
 
+  if (tabKey === 'world' && tabs.world.drawer) {
+    tabs.world.drawer.scrollTop = 0;
+  }
+
   audioSynth.playChime();
+  scheduleMobileOverflowDiagnostics();
 }
 
 window.addEventListener("beforeunload", () => {
