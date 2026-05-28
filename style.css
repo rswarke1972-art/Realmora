@@ -120,7 +120,6 @@ button {
   transition: var(--transition-smooth);
   border: none;
   outline: none;
-  touch-action: manipulation;
 }
 
 /* --- TYPOGRAPHY UTILITIES --- */
@@ -992,8 +991,6 @@ button {
   max-height: 250px;
   overflow-y: auto;
   animation: slideUpFade 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-  position: relative;
-  z-index: 5
 }
 
 .game-drawer-panel.active {
@@ -1405,93 +1402,351 @@ button {
   to { transform: translateX(120%); opacity: 0; }
 }
 
-/* ==========================
-   MOBILE OPTIMIZATION
-========================== */
+/* ==========================================
+   REALMORA MOBILE RESPONSIVE FIX
+   PHONE + TABLET
+========================================== */
 
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
+
+  /* =======================
+     GLOBAL FIX
+  ======================= */
+
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
+  }
+
+  * {
+    box-sizing: border-box;
+    max-width: 100%;
+  }
 
   body {
-    overflow-x: hidden;
+    padding: 0;
+    margin: 0;
   }
 
-  /* Main gameplay layout */
-  .game-layout {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 0.8rem;
-    padding: 0.6rem;
-  }
+  /* =======================
+     MAIN GAME CONTAINER
+  ======================= */
 
-  /* Stats row */
-  .stats-grid {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-  }
-
-  .stat-widget {
-    min-width: 0;
-    padding: 0.7rem;
-  }
-
-  /* Event panel */
-  .event-card,
-  .event-panel {
+  .game-screen,
+  .screen-container,
+  .game-container {
     width: 100% !important;
-    padding: 1rem !important;
+    padding: 12px !important;
+    overflow-x: hidden !important;
   }
 
-  .event-title {
+  /* =======================
+     HEADER
+  ======================= */
+
+  .top-header,
+  .game-header {
+    padding: 12px !important;
+    border-radius: 18px !important;
+  }
+
+  /* Logo title */
+  .font-royal,
+  h1 {
     font-size: 1.8rem !important;
-    line-height: 1.2;
-    text-align: center;
   }
 
-  .event-story {
-    font-size: 1rem;
-    line-height: 1.7;
+  /* Save / settings buttons */
+  .header-actions,
+  .top-actions {
+    gap: 8px !important;
   }
 
-  /* Choice buttons */
-  .choice-btn,
-  .event-choice {
-    width: 100% !important;
-    min-height: 70px;
-    font-size: 1rem;
-    padding: 1rem;
-  }
+  /* =======================
+     STATS WIDGETS
+  ======================= */
 
-  /* Bottom nav */
-  .bottom-tabs-container {
+  .stats-grid,
+  .dashboard-stats {
+
     display: grid !important;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 0.5rem;
+
+    grid-template-columns:
+      repeat(2, 1fr) !important;
+
+    gap: 10px !important;
+  }
+
+  .stat-widget,
+  .widget-stat,
+  [id^="widget-"] {
+
+    min-width: 0 !important;
+    width: 100% !important;
+    padding: 12px !important;
+  }
+
+  .stat-title {
+    font-size: 0.75rem !important;
+  }
+
+  .stat-value {
+    font-size: 1rem !important;
+  }
+
+  /* =======================
+     EVENT CARD
+  ======================= */
+
+  .event-card,
+  .event-panel,
+  .story-panel,
+  .decision-panel {
+
+    width: 100% !important;
+    padding: 18px !important;
+    border-radius: 18px !important;
+  }
+
+  .event-title,
+  .decision-title {
+
+    font-size: 1.9rem !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+  }
+
+  .event-description,
+  .decision-description {
+
+    font-size: 1rem !important;
+    line-height: 1.7 !important;
+    text-align: center !important;
+  }
+
+  /* =======================
+     EVENT CHOICE BUTTONS
+  ======================= */
+
+  .event-choice,
+  .decision-btn,
+  .choice-btn {
+
+    width: 100% !important;
+
+    padding: 16px !important;
+
+    font-size: 1rem !important;
+
+    white-space: normal !important;
+    word-break: break-word !important;
+    line-height: 1.5 !important;
+  }
+
+  /* =======================
+     SIDE PANEL
+     PLAYER PROFILE
+  ======================= */
+
+  .profile-sidebar,
+  .player-sidebar {
+
+    width: 100% !important;
+    margin-bottom: 14px !important;
+  }
+
+  /* =======================
+     DIPLOMACY NPC CARDS
+  ======================= */
+
+  .npc-item {
+
+    width: 100% !important;
+    min-width: unset !important;
+    padding: 10px !important;
+  }
+
+  /* =======================
+     TAB BUTTONS
+  ======================= */
+
+  .bottom-tabs-container {
+
+    display: grid !important;
+
+    grid-template-columns:
+      repeat(3, 1fr) !important;
+
+    gap: 8px !important;
   }
 
   .tab-btn {
-    min-height: 58px;
-    font-size: 0.95rem;
+
+    width: 100% !important;
+
+    min-width: 0 !important;
+
+    padding: 14px 8px !important;
+
+    font-size: 0.9rem !important;
   }
 
-  /* World cards */
+  /* =======================
+     DRAWER PANELS
+  ======================= */
+
+  .game-drawer-panel {
+
+    width: 100% !important;
+
+    max-height: 280px !important;
+
+    overflow-y: auto !important;
+
+    overflow-x: hidden !important;
+
+    padding: 12px !important;
+  }
+
+  /* =======================
+     WORLD PLAYER CARDS
+  ======================= */
+
+  #real-players-list-mobile {
+
+    display: flex !important;
+
+    overflow-x: auto !important;
+
+    gap: 10px !important;
+
+    scroll-snap-type: x mandatory;
+  }
+
+  #real-players-list-mobile > div {
+
+    min-width: 220px !important;
+
+    flex: 0 0 auto !important;
+
+    scroll-snap-align: start;
+  }
+
+  /* =======================
+     VIEW KINGDOM MODAL
+     FIXES YOUR BUG
+  ======================= */
+
+  #kingdom-profile-modal,
+  .modal-overlay {
+
+    width: 100vw !important;
+
+    max-width: 100vw !important;
+
+    overflow-x: hidden !important;
+
+    padding: 10px !important;
+  }
+
+  .modal-content,
+  .kingdom-profile-card {
+
+    width: 100% !important;
+
+    max-width: 100% !important;
+
+    min-width: 0 !important;
+
+    overflow-x: hidden !important;
+
+    padding: 16px !important;
+
+    border-radius: 20px !important;
+  }
+
+  /* MODAL BODY STACK */
+  .modal-body,
+  .profile-layout,
+  .kingdom-layout {
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    gap: 14px !important;
+  }
+
+  /* Stats inside modal */
+  .modal-stats-grid,
+  .profile-stats-grid {
+
+    display: grid !important;
+
+    grid-template-columns:
+      repeat(2, 1fr) !important;
+
+    gap: 10px !important;
+  }
+
+  /* Action buttons */
+  .modal-actions-container {
+
+    display: grid !important;
+
+    grid-template-columns:
+      repeat(2, 1fr) !important;
+
+    gap: 8px !important;
+
+    width: 100% !important;
+  }
+
+  .modal-actions-container button {
+
+    width: 100% !important;
+
+    min-width: 0 !important;
+
+    padding: 12px !important;
+
+    font-size: 0.85rem !important;
+
+    white-space: normal !important;
+  }
+
+  /* =======================
+     FIX GOLD BORDER CUTTING
+  ======================= */
+
   .glass-panel {
-    max-width: 100%;
-    overflow: hidden;
+
+    overflow: hidden !important;
+
+    width: 100% !important;
+
+    min-width: 0 !important;
   }
 
-  /* Kingdom buttons */
-  .btn-royal,
-  .btn-royal-outline {
-    min-height: 52px;
-    font-size: 0.95rem;
+  /* =======================
+     CHRONOLOGY
+  ======================= */
+
+  .history-item {
+    padding: 12px !important;
   }
 
-  /* Fix scrolling */
-  html,
-  body {
-    overflow-x: hidden;
-    width: 100%;
+  /* =======================
+     TEXT SIZE
+  ======================= */
+
+  p {
+    font-size: 0.95rem !important;
   }
 
+  span {
+    word-break: break-word;
+  }
 }
