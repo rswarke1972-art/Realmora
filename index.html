@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Realmora 👑 Dark Strategy Kingdom Simulator</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Govern, negotiate, and survive. Realmora is an immersive dark fantasy political strategy simulator where every decision dictates the fate of your empire and relationships.">
+  <meta name="keywords" content="Realmora, strategy game, kingdom simulator, dark fantasy, political simulator, PWA game, indie game">
+  <meta name="author" content="Realmora Team">
+  
+  <!-- PWA & Mobile App Support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Realmora">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.svg">
+  
+  <!-- Premium Style Imports -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient Gold Dust Shimmer Overlay -->
+  <div class="sparkles"></div>
+
+  <!-- Ambient Sound Control Widget -->
+  <div class="sound-ambient-widget">
+    <button id="btn-sound-toggle" class="btn-header glass-panel" title="Toggle Ambience Sound" aria-label="Toggle Sound">
+      🔇
+    </button>
+  </div>
+
+  <!-- ==================== 1. LANDING SCREEN ==================== -->
+  <section id="screen-landing" class="game-screen active">
+    <div class="hero-crest-container">
+  <img src="icon.svg" alt="Realmora Logo" class="hero-logo">
+</div>
+    
+    <span class="title-sub">Political Strategy Simulator</span>
+    <h1 class="title-main font-royal">REALMORA</h1>
+    
+    <div class="glass-panel lore-box">
+      <p>"The crown is heavy, but the throne awaits. Rule wisely, balance the scales of power, negotiate alliances with neighboring rulers, and survive the cold winds of political intrigue."</p>
+    </div>
+    
+    <div class="button-stack">
+      <button id="btn-play-new" class="btn-royal">
+        Begin Reign 👑
+      </button>
+      <button id="btn-play-continue" class="btn-royal-outline" style="display: none;">
+        Continue Reign 👑
+      </button>
+    </div>
+  </section>
+
+  <!-- ==================== 2. KINGDOM SETUP SCREEN ==================== -->
+  <section id="screen-setup" class="game-screen">
+    <div class="setup-title-bar">
+      <h2 class="font-royal text-gold">Establish Your Realm</h2>
+      <p class="text-muted">Write your name in the archives of history.</p>
+    </div>
+
+    <div class="glass-panel setup-form-panel">
+      <!-- Input Ruler Name -->
+      <div class="form-group">
+        <label for="setup-ruler-name">Your Ruler Title & Name</label>
+        <input type="text" id="setup-ruler-name" class="input-royal" placeholder="e.g. King Arthur, Empress Sophia" maxlength="25">
+      </div>
+
+      <!-- Input Kingdom Name -->
+      <div class="form-group">
+        <label for="setup-kingdom-name">Name of Your Kingdom</label>
+        <input type="text" id="setup-kingdom-name" class="input-royal" placeholder="e.g. Camelot, Eldoria" maxlength="25">
+      </div>
+
+      <!-- Select Royal Focus Specialty -->
+      <div class="form-group">
+        <label>Select Royal House Specialty</label>
+        <div class="focus-selector-grid">
+          <div class="focus-card selected" data-focus="merchant">
+            <span class="focus-icon">💰</span>
+            <span class="focus-name">Merchant Guild</span>
+            <span class="focus-desc">Prosperous trade network. Start with +15 Economy.</span>
+          </div>
+          <div class="focus-card" data-focus="guard">
+            <span class="focus-icon">⚔️</span>
+            <span class="focus-name">Iron Guard</span>
+            <span class="focus-desc">Fierce military drills. Start with +15 War Defense.</span>
+          </div>
+          <div class="focus-card" data-focus="embassy">
+            <span class="focus-icon">🕊️</span>
+            <span class="focus-name">Scholar Embassy</span>
+            <span class="focus-desc">Masterful negotiators. Start with +15 Diplomacy.</span>
+          </div>
+          <div class="focus-card" data-focus="monarch">
+            <span class="focus-icon">🤝</span>
+            <span class="focus-name">Sacred Order</span>
+            <span class="focus-desc">Highly trusted house. Start with +15 Citizens Trust.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="setup-action-bar">
+      <button id="btn-setup-back" class="btn-royal-outline">Back</button>
+      <button id="btn-setup-confirm" class="btn-royal">Claim Throne 👑</button>
+    </div>
+  </section>
+
+  <!-- ==================== 3. MAIN GAMEPLAY SCREEN ==================== -->
+  <section id="screen-gameplay" class="game-screen">
+    <!-- Top Bar Header info -->
+    <header class="glass-panel game-header">
+      <div class="header-branding">Realmora 👑</div>
+      <div class="header-actions">
+        <button id="btn-game-save" class="btn-header" title="Save Reign Data" aria-label="Save">💾</button>
+        <button id="btn-game-restart" class="btn-header" title="Abrupt Abdication / Restart" aria-label="Restart">🔄</button>
+      </div>
+    </header>
+
+    <!-- Top Dashboard Stats Panel -->
+    <div class="stats-dashboard-grid">
+      <!-- 1. Economy Stat -->
+      <div id="widget-economy" class="glass-panel stat-widget widget-economy" title="Economy controls wealth, research, and resource reserves.">
+        <div class="stat-widget-header">
+          <span>Economy</span>
+          <div class="stat-emoji-val">
+            <span class="stat-emoji">💰</span>
+            <span id="stat-val-economy" class="stat-val-text">50</span>
+          </div>
+        </div>
+        <div class="stat-bar-container">
+          <div id="stat-fill-economy" class="stat-bar-fill" style="width: 50%;"></div>
+        </div>
+      </div>
+
+      <!-- 2. Trust Stat -->
+      <div id="widget-trust" class="glass-panel stat-widget widget-trust" title="Trust governs population respect, rebellion risk, and internal security.">
+        <div class="stat-widget-header">
+          <span>Trust</span>
+          <div class="stat-emoji-val">
+            <span class="stat-emoji">🤝</span>
+            <span id="stat-val-trust" class="stat-val-text">50</span>
+          </div>
+        </div>
+        <div class="stat-bar-container">
+          <div id="stat-fill-trust" class="stat-bar-fill" style="width: 50%;"></div>
+        </div>
+      </div>
+
+      <!-- 3. War Stat -->
+      <div id="widget-war" class="glass-panel stat-widget widget-war" title="War represents army preparation, fortresses defense, and tactical power.">
+        <div class="stat-widget-header">
+          <span>War</span>
+          <div class="stat-emoji-val">
+            <span class="stat-emoji">⚔️</span>
+            <span id="stat-val-war" class="stat-val-text">50</span>
+          </div>
+        </div>
+        <div class="stat-bar-container">
+          <div id="stat-fill-war" class="stat-bar-fill" style="width: 50%;"></div>
+        </div>
+      </div>
+
+      <!-- 4. Diplomacy Stat -->
+      <div id="widget-diplomacy" class="glass-panel stat-widget widget-diplomacy" title="Diplomacy dictates foreign standing, treaty success, and intelligence.">
+        <div class="stat-widget-header">
+          <span>Diplomacy</span>
+          <div class="stat-emoji-val">
+            <span class="stat-emoji">🕊️</span>
+            <span id="stat-val-diplomacy" class="stat-val-text">50</span>
+          </div>
+        </div>
+        <div class="stat-bar-container">
+          <div id="stat-fill-diplomacy" class="stat-bar-fill" style="width: 50%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle Gameplay Layout Grid -->
+    <div class="gameplay-middle-grid">
+      
+      <!-- Left Profile & simulated player info panel -->
+      <aside class="side-profile-panel">
+        <!-- Main Ruler Card -->
+        <div class="glass-panel profile-card">
+          <div id="ruler-crest-sigil" class="profile-avatar-container">👑</div>
+          <span class="profile-label">Monarch of <span id="label-kingdom-name">the Realm</span></span>
+          <h3 id="label-ruler-name" class="profile-ruler-name">Ruler Name</h3>
+          <span id="label-personality" class="profile-personality-badge">Balanced Monarch 👑</span>
+        </div>
+
+        <!-- Turn Metrics Card -->
+        <div class="glass-panel turn-card">
+          <div class="turn-metric">
+            <span class="profile-label">Turn</span>
+            <span id="label-turn-number" class="turn-metric-val">1</span>
+          </div>
+          <div class="turn-metric">
+            <span class="profile-label">Risk State</span>
+            <span id="label-risk-state" class="risk-val low">Low</span>
+          </div>
+        </div>
+
+        <!-- Simulated Foreign NPC relationships -->
+        <div class="glass-panel npc-kingdoms-list">
+          <h4 class="npc-kingdoms-list-header">Foreign Kingdoms</h4>
+          
+          <!-- 1. Iron Vanguard -->
+          <div class="npc-item" data-npc="ironVanguard" title="Militaristic kingdom. Reacts to War stat and militaristic decisions.">
+            <div id="crest-ironVanguard" class="npc-crest-box"></div>
+            <div class="npc-details">
+              <span class="npc-name">Iron Vanguard ⚔️</span>
+              <div class="npc-bar-bg"><div id="bar-ironVanguard" class="npc-bar-fill"></div></div>
+              <span id="status-ironVanguard" class="npc-status">Neutral</span>
+            </div>
+          </div>
+
+          <!-- 2. Gilded Syndicate -->
+          <div class="npc-item" data-npc="gildedSyndicate" title="Merchant Guild barons. Reacts heavily to wealth and trade pacts.">
+            <div id="crest-gildedSyndicate" class="npc-crest-box"></div>
+            <div class="npc-details">
+              <span class="npc-name">Gilded Syndicate 💰</span>
+              <div class="npc-bar-bg"><div id="bar-gildedSyndicate" class="npc-bar-fill"></div></div>
+              <span id="status-gildedSyndicate" class="npc-status">Neutral</span>
+            </div>
+          </div>
+
+          <!-- 3. Sylvan Conclave -->
+          <div class="npc-item" data-npc="sylvanConclave" title="Isolationist druid woods. Reacts to trust, nature logging, and non-aggression.">
+            <div id="crest-sylvanConclave" class="npc-crest-box"></div>
+            <div class="npc-details">
+              <span class="npc-name">Sylvan Conclave 🌲</span>
+              <div class="npc-bar-bg"><div id="bar-sylvanConclave" class="npc-bar-fill"></div></div>
+              <span id="status-sylvanConclave" class="npc-status">Neutral</span>
+            </div>
+          </div>
+
+          <!-- 4. Celestia Hegemony -->
+          <div class="npc-item" data-npc="celestiaHegemony" title="Solar Religious Empire. Reacts to sun faith, marriages, and religious events.">
+            <div id="crest-celestiaHegemony" class="npc-crest-box"></div>
+            <div class="npc-details">
+              <span class="npc-name">Celestia Hegemony 🕊️</span>
+              <div class="npc-bar-bg"><div id="bar-celestiaHegemony" class="npc-bar-fill"></div></div>
+              <span id="status-celestiaHegemony" class="npc-status">Neutral</span>
+            </div>
+          </div>
+
+          <!-- REAL MULTIPLAYER KINGDOMS -->
+<div class="glass-panel" style="margin-top: 1rem; padding: 1rem;">
+  <h4 class="npc-kingdoms-list-header">
+    🌍 Real Kingdoms
+  </h4>
+
+  <div id="real-players-list">
+    <p class="text-muted">
+      No rulers online...
+    </p>
+  </div>
+</div>
+        </div>
+      </aside>
+
+      <!-- Center Decision Card & gameplay focus -->
+      <main class="decision-card-container">
+        <!-- Animated Consequence Preview Overlay (Appears on Hovering Choice) -->
+        <div id="choice-consequence-preview" class="glass-panel consequence-preview-overlay">
+          <h4 class="consequence-title">Consequence Prediction</h4>
+          <p id="preview-text" class="consequence-text">Select a decision to predict the sovereign fallout...</p>
+          <div id="preview-stat-tags" class="consequence-stat-tags">
+            <!-- Dynamically populated stat tag changes -->
+          </div>
+        </div>
+
+        <!-- The actual decision card deck -->
+        <article id="current-decision-card" class="glass-panel active-card">
+          <span id="card-badge" class="card-theme-badge">Royal Decree</span>
+          <h2 id="card-title-text" class="card-title">Famine Relief</h2>
+          
+          <div class="card-story-wrapper">
+            <p id="card-story-text" class="card-story">A neighboring kingdom asks for emergency grain food because their harvests shrivelled. Our granaries are full but advisors warn that gold reserves are low.</p>
+          </div>
+
+          <div id="card-choices" class="card-choices-stack">
+            <button class="btn-choice">A. Help generously (+Trust, +Diplomacy, -Economy)</button>
+            <button class="btn-choice">B. Send moderate aid (Balanced effects)</button>
+            <button class="btn-choice">C. Refuse (+Economy, -Trust)</button>
+            <button class="btn-choice">D. Exploit Weakness (+Economy, +War preparation, -Trust)</button>
+          </div>
+
+          <!-- Choice Applied Banner Animation Overlay popup -->
+          <div id="choice-notification" class="glass-panel consequence-notification-banner">
+            <h3 class="text-gold font-royal">Decree Enacted!</h3>
+            <p id="choice-narrative-feedback" class="banner-narrative">"Your people loved this choice."</p>
+            <div id="choice-banner-deltas" class="banner-list">
+              <!-- Animated numbers e.g. "Economy +8 💰" -->
+            </div>
+            <span class="banner-dismiss-hint">Tap Card to Continue Reign</span>
+          </div>
+        </article>
+      </main>
+
+    </div>
+
+    <!-- Bottom Navigation Drawers for mobile view swapping -->
+    <div class="bottom-tabs-container">
+      <button id="tab-btn-diplomacy" class="tab-btn active">🌐 Diplomacy</button>
+      <button id="tab-btn-world" class="tab-btn">🌍 World</button>
+      <button id="tab-btn-chronicle" class="tab-btn">📜 Chronology</button>
+    </div>
+
+    <!-- Collapsible Drawers -->
+    <!-- 1. Mobile Diplomacy View -->
+    <section id="drawer-diplomacy" class="glass-panel game-drawer-panel active">
+      <div id="mobile-npc-list" style="display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem;">
+        <!-- Filled dynamically in app.js on mobile screens -->
+      </div>
+    </section>
+
+    <!-- 2. Mobile / Desktop World View -->
+    <section id="drawer-world" class="glass-panel game-drawer-panel">
+
+  <!-- Real Kingdoms -->
+  <h3 class="font-royal text-gold"
+      style="font-size: 0.9rem;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(212,175,55,0.15);
+      padding-bottom: 0.25rem;">
+
+    Real Kingdoms 🌍
+  </h3>
+
+  <div id="real-players-list-mobile"
+       style="display: flex;
+       gap: 0.5rem;
+       overflow-x: auto;
+       padding-bottom: 1rem;">
+
+    <p class="text-muted"
+       style="font-size: 0.8rem;
+       text-align: center;
+       padding: 1rem 0;">
+
+      No other rulers online...
+
+    </p>
+  </div>
+
+  <!-- Empire Alliances -->
+  <h3 class="font-royal text-gold"
+      style="font-size: 0.9rem;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(212,175,55,0.15);
+      padding-bottom: 0.25rem;">
+
+    👑 Empire Alliances
+  </h3>
+
+  <div id="alliances-list">
+    <p class="text-muted"
+       style="font-size:0.8rem;
+       text-align:center;
+       padding:1rem 0;">
+
+      No alliances formed yet...
+
+    </p>
+  </div>
+
+  <button
+    id="btn-create-alliance"
+    class="btn-royal"
+    style="width:100%; margin-top:1rem;"
+  >
+    Create Alliance
+  </button>
+
+  <h3 class="font-royal text-gold"
+style="
+font-size:0.9rem;
+text-transform:uppercase;
+margin-top:1rem;
+margin-bottom:0.5rem;
+border-bottom:1px solid rgba(212,175,55,0.15);
+padding-bottom:0.25rem;
+">
+
+🏆 Global Rankings
+
+</h3>
+
+<div id="leaderboard-list">
+
+  <p class="text-muted"
+  style="
+  font-size:0.8rem;
+  text-align:center;
+  padding:1rem 0;
+  ">
+    No rulers ranked yet...
+  </p>
+
+</div>
+
+<h3 class="font-royal text-gold"
+style="
+font-size:0.9rem;
+margin-top:1rem;
+margin-bottom:0.5rem;
+">
+
+🏆 Realm Rankings
+
+</h3>
+
+<div id="leaderboard-list">
+
+<p class="text-muted"
+style="
+font-size:0.8rem;
+text-align:center;
+padding:1rem 0;
+">
+
+No rulers ranked yet.
+
+</p>
+
+</div>
+
+<h3 class="font-royal text-gold"
+style="
+font-size:0.9rem;
+margin-top:1rem;
+margin-bottom:0.5rem;
+">
+
+🏅 Achievements
+
+</h3>
+
+<div id="achievements-list">
+
+<p class="text-muted"
+style="
+font-size:0.8rem;
+text-align:center;
+">
+
+No achievements yet.
+
+</p>
+
+</div>
+
+<h3 class="font-royal text-gold"
+style="
+font-size:0.9rem;
+margin-top:1rem;
+margin-bottom:0.5rem;
+">
+
+🗳️ World Politics
+
+</h3>
+
+<div id="world-votes-list">
+
+  <p class="text-muted"
+  style="
+  font-size:0.8rem;
+  text-align:center;
+  ">
+
+    No active votes.
+
+  </p>
+
+</div>
+
+<button
+id="btn-create-vote"
+class="btn-royal"
+style="
+width:100%;
+margin-top:1rem;
+">
+
+Create World Vote
+
+</button>
+
+</section>
+
+    <!-- 3. Mobile / Desktop Chronicle View -->
+    <section id="drawer-chronicle" class="glass-panel game-drawer-panel">
+      <h3 class="font-royal text-gold" style="font-size: 0.9rem; text-transform: uppercase; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(212,175,55,0.15); padding-bottom: 0.25rem;">Reign Chronicles</h3>
+      <div id="history-timeline-ledger" class="history-ledger">
+        <p class="text-muted" style="font-size: 0.8rem; text-align: center; padding: 1rem 0;">No entries in your history ledger yet.</p>
+        <!-- History entries appended dynamically -->
+      </div>
+    </section>
+  </section>
+
+  <!-- ==================== 4. ENDGAME SCREEN ==================== -->
+  <section id="screen-endgame" class="game-screen">
+    <div id="ending-icon-badge" class="ending-crest">☠️</div>
+    <span class="title-sub">The Reign Concluded</span>
+    <h2 id="ending-title" class="ending-type-title font-royal">The Sovereign Collapse</h2>
+
+    <div class="glass-panel ending-narrative-panel">
+      <p id="ending-narrative-text">Having driven your kingdom into deep bankruptcy, your nobles locked you out of the treasury, and the kingdom fell to foreign invasions.</p>
+    </div>
+
+    <!-- Reign Summary Statistics -->
+    <div class="ending-stats-grid">
+      <div class="ending-metric glass-panel">
+        <span class="ending-metric-label">Turns Survived</span>
+        <span id="ending-val-turns" class="ending-metric-val">12</span>
+      </div>
+      <div class="ending-metric glass-panel">
+        <span class="ending-metric-label">Final Personality</span>
+        <span id="ending-val-personality" class="ending-metric-val">Wise Diplomat</span>
+      </div>
+      <div class="ending-metric glass-panel">
+        <span class="ending-metric-label">NPC Treaties</span>
+        <span id="ending-val-treaties" class="ending-metric-val">0</span>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 1rem; width: 100%; max-width: 450px; margin: 0 auto;">
+      <button id="btn-ending-new" class="btn-royal" style="flex: 1;">
+        Rebuild Realm 👑
+      </button>
+      <button id="btn-ending-ledger" class="btn-royal-outline" style="flex: 1;">
+        Show Reign Ledger 📜
+      </button>
+    </div>
+  </section>
+
+  <!-- ==================== 5. PWA INSTALL POPUP SYSTEM ==================== -->
+  <div id="pwa-install-dialog" class="glass-panel" style="position: fixed; bottom: 1rem; left: 1rem; right: 1rem; padding: 1.2rem; display: none; z-index: 1000; border-color: var(--color-gold); max-width: 450px; margin: 0 auto; box-shadow: var(--shadow-gold-glow);">
+    <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+      <div style="width: 48px; height: 48px; border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.5); border: 1px solid var(--color-gold); display: flex; align-items: center; justify-content: center;">
+        <svg viewBox="0 0 512 512" style="width: 80%; height: 80%;">
+          <use href="icon.svg#gold-glow"></use>
+          <image href="icon.svg"/>
+        </svg>
+      </div>
+      <div>
+        <h4 class="font-royal text-gold" style="font-size: 0.95rem;">Install Realmora 👑</h4>
+        <p class="text-muted" style="font-size: 0.75rem; line-height: 1.3;">Download to home screen for fullscreen premium strategy gameplay and full offline support!</p>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+      <button id="btn-pwa-dismiss" class="btn-royal-outline" style="font-size: 0.78rem; padding: 0.5rem 1rem;">Later</button>
+      <button id="btn-pwa-install" class="btn-royal" style="font-size: 0.78rem; padding: 0.5rem 1rem;">Install App</button>
+    </div>
+  </div>
+
+  <!-- ==================== 6. FLOATING NOTIFICATIONS CONTAINER ==================== -->
+  <div id="notifications-container"></div>
+
+  <!-- ==================== 7. KINGDOM PROFILE MODAL (PREMIUM POPUP) ==================== -->
+  <div id="kingdom-profile-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content glass-panel">
+      <button id="modal-close" class="btn-close" aria-label="Close modal">&times;</button>
+      <div class="modal-header">
+        <div id="modal-avatar" class="profile-avatar-container" style="font-size: 1.8rem; width: 60px; height: 60px; margin-bottom: 0.5rem;">👑</div>
+        <h3 id="modal-title-ruler" class="font-royal text-gold" style="font-size: 1.4rem;">Ruler Name</h3>
+        <span id="modal-title-kingdom" class="text-muted" style="font-size: 0.9rem;">Kingdom Name</span>
+        <div>
+          <span id="modal-relationship-badge" class="profile-personality-badge" style="margin-top: 6px;">Neutral ⚖️</span>
+        </div>
+      </div>
+      <div class="modal-body" style="margin-top: 1rem;">
+        <div class="modal-stats-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 1.2rem;">
+          <!-- Economy Widget -->
+          <div class="modal-stat-box" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 0.5rem; text-align: center; border-radius: 6px; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 1.1rem;">💰</span>
+            <span style="font-size: 0.65rem; text-transform: uppercase; color: var(--color-text-muted);">Economy</span>
+            <span id="modal-stat-economy" style="font-size: 1.1rem; font-weight: 700; color: #fff;">50</span>
+          </div>
+          <!-- Trust Widget -->
+          <div class="modal-stat-box" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 0.5rem; text-align: center; border-radius: 6px; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 1.1rem;">🤝</span>
+            <span style="font-size: 0.65rem; text-transform: uppercase; color: var(--color-text-muted);">Trust</span>
+            <span id="modal-stat-trust" style="font-size: 1.1rem; font-weight: 700; color: #fff;">50</span>
+          </div>
+          <!-- War Widget -->
+          <div class="modal-stat-box" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 0.5rem; text-align: center; border-radius: 6px; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 1.1rem;">⚔️</span>
+            <span style="font-size: 0.65rem; text-transform: uppercase; color: var(--color-text-muted);">War</span>
+            <span id="modal-stat-war" style="font-size: 1.1rem; font-weight: 700; color: #fff;">50</span>
+          </div>
+          <!-- Diplomacy Widget -->
+          <div class="modal-stat-box" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 0.5rem; text-align: center; border-radius: 6px; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 1.1rem;">🕊️</span>
+            <span style="font-size: 0.65rem; text-transform: uppercase; color: var(--color-text-muted);">Diplomacy</span>
+            <span id="modal-stat-diplomacy" style="font-size: 1.1rem; font-weight: 700; color: #fff;">50</span>
+          </div>
+        </div>
+        
+        <div class="modal-actions-container"
+style="
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 8px;
+margin-top: 1rem;
+">
+
+  <button
+  id="btn-action-alliance"
+  class="btn-royal-outline"
+  style="
+  font-size: 0.82rem;
+  padding: 0.7rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  ">
+    🤝 Alliance
+  </button>
+
+  <button
+  id="btn-action-trade"
+  class="btn-royal-outline"
+  style="
+  font-size: 0.82rem;
+  padding: 0.7rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  ">
+    💰 Trade
+  </button>
+
+  <button
+  id="btn-action-spy"
+  class="btn-royal-outline"
+  style="
+  font-size: 0.82rem;
+  padding: 0.7rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  ">
+    🕵️ Spy
+  </button>
+
+  <!-- NEW BUTTON -->
+  <button
+  id="btn-action-sabotage"
+  class="btn-royal-outline"
+  style="
+  font-size: 0.82rem;
+  padding: 0.7rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  ">
+    🔥 Sabotage
+  </button>
+
+  <button
+  id="btn-action-war"
+  class="btn-royal"
+  style="
+  font-size: 0.82rem;
+  padding: 0.7rem 0.5rem;
+  background:
+  linear-gradient(
+    135deg,
+    var(--color-stat-war) 0%,
+    #c0392b 100%
+  );
+  border-color: #e74c3c;
+  box-shadow:
+  0 4px 10px
+  rgba(231,76,60,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  ">
+    ⚔️ War
+  </button>
+
+</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Module Code Integration -->
+  <script type="module" src="firebase.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

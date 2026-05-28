@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bg-grad" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#1b122c"/>
+      <stop offset="60%" stop-color="#0a0614"/>
+      <stop offset="100%" stop-color="#030206"/>
+    </radialGradient>
+
+    <!-- Gold Gradient -->
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe259"/>
+      <stop offset="30%" stop-color="#ffa751"/>
+      <stop offset="70%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#8a6f27"/>
+    </linearGradient>
+
+    <!-- Platinum Gradient -->
+    <linearGradient id="plat-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7f8c8d"/>
+      <stop offset="50%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#bdc3c7"/>
+    </linearGradient>
+
+    <!-- Glowing Drop Shadow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Gold Shimmer Filter -->
+    <filter id="gold-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur1"/>
+      <feComponentTransfer in="blur1" result="glow1">
+        <feFuncA type="linear" slope="0.6"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode in="glow1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Circular Mask Background -->
+  <rect width="100%" height="100%" fill="url(#bg-grad)"/>
+
+  <!-- Outer Elegant Gold Circular Border -->
+  <circle cx="256" cy="256" r="230" fill="none" stroke="url(#gold-grad)" stroke-width="4" opacity="0.45"/>
+  <circle cx="256" cy="256" r="222" fill="none" stroke="url(#gold-grad)" stroke-width="1.5" stroke-dasharray="10 15" opacity="0.6"/>
+
+  <!-- Glowing Crown Design Group -->
+  <g filter="url(#gold-glow)" transform="translate(0, 5)">
+    <!-- Base Ribbon of the Crown -->
+    <path d="M 120,340 C 120,340 180,360 256,360 C 332,360 392,340 392,340 L 392,310 C 392,310 332,330 256,330 C 180,330 120,310 120,310 Z" fill="url(#gold-grad)" filter="drop-shadow(0px 8px 10px rgba(0, 0, 0, 0.6))"/>
+    
+    <!-- Crown Spikes and Main Body -->
+    <path d="M 120,310 
+             L 125,200 
+             L 175,270 
+             L 256,120 
+             L 337,270 
+             L 387,200 
+             L 392,310 
+             C 392,310 332,330 256,330 
+             C 180,330 120,310 120,310 Z" 
+          fill="url(#gold-grad)" 
+          stroke="url(#gold-grad)" 
+          stroke-width="2"/>
+
+    <!-- Inlaid Crown Velvet Cap (Dark Royal Violet Backing) -->
+    <path d="M 134,310 C 134,260 170,225 210,230 C 230,233 245,245 256,252 C 267,245 282,233 302,230 C 342,225 378,260 378,310 Z" fill="#4d1c6d" opacity="0.45"/>
+
+    <!-- Crown Jewels / Ornaments -->
+    <!-- Center Orb and Cross -->
+    <circle cx="256" cy="110" r="10" fill="url(#gold-grad)"/>
+    <path d="M 256,92 L 256,108 M 248,100 L 264,100" stroke="url(#gold-grad)" stroke-width="4.5" stroke-linecap="round"/>
+
+    <!-- Side Orbs -->
+    <circle cx="125" cy="192" r="8" fill="url(#gold-grad)"/>
+    <circle cx="387" cy="192" r="8" fill="url(#gold-grad)"/>
+    
+    <!-- Inlaid Jewels along the Base -->
+    <circle cx="160" cy="333" r="5" fill="#e74c3c" filter="drop-shadow(0px 0px 4px #e74c3c)"/>
+    <circle cx="208" cy="341" r="5" fill="#3498db" filter="drop-shadow(0px 0px 4px #3498db)"/>
+    <circle cx="256" cy="344" r="6.5" fill="#2ecc71" filter="drop-shadow(0px 0px 5px #2ecc71)"/>
+    <circle cx="304" cy="341" r="5" fill="#3498db" filter="drop-shadow(0px 0px 4px #3498db)"/>
+    <circle cx="352" cy="333" r="5" fill="#e74c3c" filter="drop-shadow(0px 0px 4px #e74c3c)"/>
+
+    <!-- Glowing Diamond Sparkle at Center -->
+    <path d="M 256,180 L 262,200 L 282,206 L 262,212 L 256,232 L 250,212 L 230,206 L 250,200 Z" fill="url(#plat-grad)" opacity="0.9" filter="drop-shadow(0px 0px 8px #ffffff)"/>
+    <circle cx="256" cy="206" r="3.5" fill="#ffffff"/>
+  </g>
+
+  <!-- Title Text stylized under crown -->
+  <text x="256" y="440" font-family="'Cinzel', 'Playfair Display', 'Georgia', serif" font-size="34" font-weight="bold" fill="url(#gold-grad)" text-anchor="middle" letter-spacing="10" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.8))">REALMORA</text>
+  <text x="256" y="465" font-family="'Inter', 'Montserrat', 'Arial', sans-serif" font-size="10" font-weight="600" fill="#a48eb9" text-anchor="middle" letter-spacing="4" opacity="0.75">STRATEGY SIMULATOR</text>
+</svg>
