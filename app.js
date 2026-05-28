@@ -930,7 +930,7 @@ for (const stat in state.stats) {
     const card = document.createElement('div');
     card.className = "glass-panel";
     card.style.padding = "0.6rem";
-    card.style.minWidth = "160px";
+    card.style.minWidth = window.innerWidth <= 768 ? "min(160px, 76vw)" : "160px";
     card.style.flex = "0 0 auto";
     card.style.display = "flex";
     card.style.flexDirection = "column";
@@ -1422,7 +1422,7 @@ text-transform:uppercase;
       const card = document.createElement("div");
       card.className = "glass-panel";
       card.style.padding = "0.75rem";
-      card.style.minWidth = "180px";
+      card.style.minWidth = window.innerWidth <= 768 ? "min(180px, 82vw)" : "180px";
       card.style.flex = "0 0 auto";
       card.style.display = "flex";
       card.style.flexDirection = "column";

@@ -1382,10 +1382,14 @@ button {
   .game-header {
     padding: 12px !important;
     border-radius: 16px !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
   }
 
   .header-branding {
-    font-size: 1.8rem !important;
+    font-size: clamp(1rem, 5.4vw, 1.25rem) !important;
+    min-width: 0 !important;
+    overflow-wrap: anywhere !important;
   }
 
   /* =========================
@@ -1418,14 +1422,16 @@ button {
 
   .active-card {
     width: 100% !important;
+    min-width: 0 !important;
     padding: 1rem !important;
     overflow-x: hidden !important;
   }
 
   .card-title {
-    font-size: 2rem !important;
+    font-size: clamp(1.35rem, 7vw, 1.75rem) !important;
     line-height: 1.15 !important;
     text-align: center !important;
+    overflow-wrap: anywhere !important;
   }
 
   .card-story {
@@ -1474,9 +1480,23 @@ button {
 
   .game-drawer-panel {
     width: 100% !important;
-    overflow-x: hidden !important;
+    min-width: 0 !important;
+    overflow-x: clip !important;
+    overflow-y: auto !important;
     max-height: 280px !important;
     padding: 12px !important;
+  }
+
+  .game-drawer-panel > * {
+    min-width: 0 !important;
+  }
+
+  #drawer-diplomacy > div,
+  #real-players-list-mobile {
+    overflow-x: auto !important;
+    overscroll-behavior-x: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x !important;
   }
 
   /* diplomacy cards */
@@ -1508,18 +1528,28 @@ button {
   .modal-overlay {
     padding: 10px !important;
     overflow-x: hidden !important;
+    overflow-y: auto !important;
   }
 
   .modal-content {
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
+    max-height: calc(100dvh - 20px) !important;
     overflow-x: hidden !important;
+    overflow-y: auto !important;
     padding: 16px !important;
   }
 
   .modal-content * {
     max-width: 100% !important;
+  }
+
+  #modal-title-kingdom {
+    display: block !important;
+    white-space: pre-line !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
   }
 
   /* FORCE STACKING */
@@ -1542,12 +1572,15 @@ button {
     min-width: 0 !important;
     font-size: 0.8rem !important;
     white-space: normal !important;
+    touch-action: manipulation !important;
   }
 
-  /* CRITICAL BUG FIX */
-  .glass-panel {
-    width: 100% !important;
-    min-width: 0 !important;
-    overflow: hidden !important;
+  /* Avoid clipping interactive descendants on touch devices */
+  .btn-royal,
+  .btn-royal-outline,
+  .btn-choice,
+  .btn-header,
+  .tab-btn {
+    touch-action: manipulation !important;
   }
 }
